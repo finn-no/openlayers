@@ -64,7 +64,7 @@
     }
     
     function test_ButtonClick_buttonClick(t) {
-        t.plan(27);
+        t.plan(29);
         events = new OpenLayers.Events({}, element);
         events.on({
             "buttonclick": logEvent,
@@ -91,6 +91,7 @@
         trigger({type: "touchend"});
         t.eq(log.length, 1, "one event fired for touchstart-touchend");
         t.eq(log[0].type, "buttonclick", "buttonclick event fired");
+        buttonClick.ignoreMouse = false;
         
         // mouse sequence started on button
         log = [];
@@ -106,6 +107,7 @@
         trigger({type: "touchend"});
         t.eq(log.length, 1, "one event fired for touchstart-(leave)-touchend");
         t.eq(log[0].type, "touchend", "touchend event goes through when sequence not finished on button");
+        buttonClick.ignoreMouse = false;
 
         // mouse sequence finished on button
         log = [];
@@ -122,6 +124,7 @@
         t.eq(log.length, 2, "two event fired for touchstart-(enter)-touchend");
         t.eq(log[0].type, "touchstart", "touchstart unrelated to button goes through");
         t.eq(log[1].type, "touchend", "touchend goes through when sequence started outside button");
+        buttonClick.ignoreMouse = false;
         
         // dblclick
         log = [];
@@ -167,7 +170,19 @@
         trigger({type: "click"});
         t.eq(log.length, 1, "one event fired for SPACE keydown");
         t.eq(log[0].type, "buttonclick", "buttonclick for SPACE keydown");
+
+        // Android browser tap (unstoppable mouse)
+        log = [];
+        trigger({type: "touchstart"});
+        trigger({type: "touchend"});
+        trigger({type: "mousedown"});
+        trigger({type: "mouseup"});
+        trigger({type: "click"});
+        t.eq(log.length, 1, "one event fired for Android browser tap (with unstoppable mouse events)");
+        t.eq(log[0].type, "buttonclick", "buttonclick event fired");
+        buttonClick.ignoreMouse = false;
     }
+
   </script>
 </head>
 <body onload="init()">
